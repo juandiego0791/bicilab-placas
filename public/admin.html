@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Pedidos Bici-LAB</title>
+<link rel="icon" type="image/png" href="img/favicon.png">
+<style>
+:root{--bg:#f5f5f7;--card:#fff;--ink:#1d1d1f;--muted:#6e6e73;--primary:#00a0df;--line:#00000014;--ok:#248a3d;--warn:#b25000;--font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;color-scheme:light}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--font)}
+header{background:#000;color:#f5f5f7;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+header b{color:var(--primary)}
+main{max-width:1100px;margin:0 auto;padding:24px 20px 64px;display:flex;flex-direction:column;gap:14px}
+.card{background:var(--card);border-radius:18px;padding:18px;box-shadow:0 4px 18px rgba(0,0,0,.05)}
+input,select,button{font:inherit;border-radius:10px;border:1px solid #d2d2d7;padding:9px 12px;background:#fff;color:var(--ink)}
+button{background:var(--primary);color:#fff;border:0;font-weight:600;cursor:pointer}
+button.ghost{background:#e8e8ed;color:var(--ink)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.stats{display:flex;gap:12px;flex-wrap:wrap}
+.stat{background:var(--card);border-radius:14px;padding:12px 16px;min-width:140px}
+.stat b{display:block;font-size:1.5rem}
+.order{display:grid;grid-template-columns:1.2fr 1fr auto;gap:14px;align-items:start}
+.order h3{margin:0 0 4px;font-size:1rem}
+.muted{color:var(--muted);font-size:.85rem}
+pre{white-space:pre-wrap;font:inherit;font-size:.85rem;background:var(--bg);border-radius:10px;padding:10px;margin:8px 0 0;max-height:220px;overflow:auto}
+.pill{display:inline-block;border-radius:999px;padding:2px 10px;font-size:.75rem;font-weight:700;background:#fff2e0;color:var(--warn)}
+.pill.ok{background:#e8f6ec;color:var(--ok)}
+@media (max-width:760px){.order{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div><b>Bici-LAB</b> · Pedidos de placas</div><div class="row"><input id="tok" type="password" placeholder="Clave de administrador" autocomplete="current-password"><button id="go">Entrar</button></div></header>
+<main>
+  <div class="stats" id="stats"></div>
+  <div class="row"><input id="q" placeholder="Buscar por nombre, celular, serie o número de pedido" style="flex:1;min-width:240px"><select id="fEstado"><option value="">Todos los estados</option></select><button class="ghost" id="reload">Actualizar</button></div>
+  <p class="muted" id="msg">Escribe la clave de administrador para ver los pedidos.</p>
+  <div id="list" style="display:flex;flex-direction:column;gap:12px"></div>
+</main>
+<script>
+const ESTADOS = ["pago por verificar","pago confirmado","en grabación","lista para entregar","despachada","entregada","cancelada"];
+const $ = s => document.querySelector(s);
+const COP = n => new Intl.NumberFormat("es-CO",{style:"currency",currency:"COP",maximumFractionDigits:0}).format(n||0);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let token = ""; try { token = sessionStorage.getItem("bl_tok") || ""; } catch {}
+let data = [];
+$("#fEstado").innerHTML += ESTADOS.map(e => `<option>${e}</option>`).join("");
+$("#tok").value = token;
+const auth = () => ({ Authorization: "Bearer " + token });
+
+async function load(){
+  if (!token) return;
+  $("#msg").textContent = "Cargando…";
+  const r = await fetch("/api/pedidos", { headers: auth() }).catch(() => null);
+  if (!r || r.status === 401) { $("#msg").textContent = "Clave incorrecta."; return; }
+  if (!r.ok) { $("#msg").textContent = "No se pudieron cargar los pedidos."; return; }
+  data = await r.json(); render();
+}
+function render(){
+  const q = $("#q").value.toLowerCase().trim(), fe = $("#fEstado").value;
+  const rows = data.filter(p => (!fe || p.estado === fe) && (!q || JSON.stringify([p.id,p.contacto,p.vehiculo]).toLowerCase().includes(q)));
+  const pend = data.filter(p => p.estado === "pago por verificar").length;
+  $("#stats").innerHTML = `<div class="stat"><span class="muted">Pedidos</span><b>${data.length}</b></div><div class="stat"><span class="muted">Pago por verificar</span><b>${pend}</b></div><div class="stat"><span class="muted">Valor transferido</span><b>${COP(data.filter(p=>p.estado!=="cancelada").reduce((s,p)=>s+(p.total||0),0))}</b></div>`;
+  $("#msg").textContent = rows.length ? "" : "No hay pedidos con ese filtro.";
+  $("#list").innerHTML = rows.map(p => {
+    const c = p.contacto || {}, v = p.vehiculo || {};
+    return `<div class="card order">
+      <div><h3>${esc(p.id)} · ${COP(p.total)} <span class="pill ${p.estado==="pago por verificar"?"":"ok"}">${esc(p.estado)}</span></h3>
+        <div>${esc(c.nombre)} · ${esc(c.celular)} ${c.correo?"· "+esc(c.correo):""}</div>
+        <div class="muted">${esc(p.servicio)} · ${new Date(p.recibido||p.creado).toLocaleString("es-CO")}</div>
+        <pre>${esc(p.resumen)}</pre></div>
+      <div><div class="muted">Vehículo</div><div><b>${esc(v.marca)} ${esc(v.modelo)}</b></div><div class="muted">Serie ${esc(v.serie)} · ${esc(v.anio)}<br>${esc(v.vmax)} km/h · ${esc(v.potencia)} W · ${esc(v.peso)} kg<br>Clase: ${esc(v.categoria)}</div></div>
+      <div class="row" style="flex-direction:column;align-items:stretch">
+        <select data-id="${esc(p.id)}" class="est">${ESTADOS.map(e=>`<option ${e===p.estado?"selected":""}>${e}</option>`).join("")}</select>
+        ${p.comprobante ? `<button class="ghost comp" data-id="${esc(p.id)}">Ver comprobante</button>` : `<span class="muted">Sin comprobante (revisar WhatsApp)</span>`}
+        <a class="muted" href="https://wa.me/57${esc(String(c.celular||"").replace(/\D/g,"").slice(-10))}" target="_blank" rel="noopener">Escribir al cliente</a>
+      </div></div>`;
+  }).join("");
+  document.querySelectorAll(".est").forEach(s => s.onchange = async () => {
+    const r = await fetch("/api/pedidos", { method:"PATCH", headers:{...auth(),"Content-Type":"application/json"}, body: JSON.stringify({ id: s.dataset.id, estado: s.value }) });
+    if (r.ok) { const p = data.find(x => x.id === s.dataset.id); p.estado = s.value; render(); } else alertBox("No se pudo cambiar el estado.");
+  });
+  document.querySelectorAll(".comp").forEach(b => b.onclick = async () => {
+    const r = await fetch("/api/comprobante?id=" + encodeURIComponent(b.dataset.id), { headers: auth() });
+    if (!r.ok) return alertBox("No se pudo abrir el comprobante.");
+    window.open(URL.createObjectURL(await r.blob()), "_blank");
+  });
+}
+function alertBox(t){ $("#msg").textContent = t; }
+$("#go").onclick = () => { token = $("#tok").value.trim(); try { sessionStorage.setItem("bl_tok", token); } catch {} load(); };
+$("#reload").onclick = load; $("#q").oninput = render; $("#fEstado").onchange = render;
+load();
+</script>
+</body>
+</html>

@@ -412,6 +412,24 @@ body{font-size:16px}
   .carousel{grid-auto-columns:82%}
   .trust{gap:12px;flex-direction:column}
 }
+
+/* v3: orden, hero centrado, foto completa */
+.hero{text-align:center}
+.hero .wrap{align-items:center}
+.hero h1{margin:0 auto;max-width:16ch}
+.hero p.lead{margin:0 auto}
+.ctas{justify-content:center}
+.hero-plate{margin-left:auto;margin-right:auto}
+.trust{justify-content:center}
+#tiempos{padding-top:72px}
+#siguenos .social-head{margin-top:0}
+.visit{align-items:start}
+.visit-photo{min-height:0}
+.visit-photo img{min-height:0;height:auto;aspect-ratio:16/9;object-fit:cover}
+.carousel{margin-bottom:96px}
+.soc img{aspect-ratio:1/1}
+.soc img.top{object-position:center 22%}
+@media (max-width:680px){.trust{align-items:center}}
 </style>
 </head>
 <body>
@@ -451,6 +469,17 @@ body{font-size:16px}
 </section>
 
 <main>
+<section class="sec" id="tiempos">
+    <div class="wrap">
+      <div class="sec-title"><h2>Cómo funciona</h2></div>
+      <ol class="steps">
+        <li><span>1</span><h3>Pides y pagas</h3><p>Llenas los datos de tu vehículo, pagas por Bre-B o transferencia y adjuntas el comprobante.</p></li>
+        <li><span>2</span><h3>Grabamos tu placa</h3><p>Queda lista en <b data-t="produccion"></b>. Te avisamos por WhatsApp.</p></li>
+        <li><span>3</span><h3>La recibes</h3><p>Instalada gratis en la tienda, instalada a domicilio en Bogotá o por envío a toda Colombia.</p></li>
+      </ol>
+    </div>
+  </section>
+
 <section class="sec" id="fotos">
   <div class="wrap">
     <div class="sec-title"><h2>Así es nuestra placa</h2><p>Fotos reales tomadas en nuestro taller. No son imágenes generadas con IA.</p></div>
@@ -662,14 +691,54 @@ body{font-size:16px}
     </div>
   </div>
 
-  <section class="sec sec-alt" id="tiempos">
+  
+
+  <section class="sec sec-alt" id="visitanos">
     <div class="wrap">
-      <div class="sec-title"><h2>Cómo funciona</h2></div>
-      <ol class="steps">
-        <li><span>1</span><h3>Pides y pagas</h3><p>Llenas los datos de tu vehículo, pagas por Bre-B o transferencia y adjuntas el comprobante.</p></li>
-        <li><span>2</span><h3>Grabamos tu placa</h3><p>Queda lista en <b data-t="produccion"></b>. Te avisamos por WhatsApp.</p></li>
-        <li><span>3</span><h3>La recibes</h3><p>Instalada gratis en la tienda, instalada a domicilio en Bogotá o por envío a toda Colombia.</p></li>
-      </ol>
+      <div class="sec-title"><h2>Visítanos</h2><p>Somos una tienda y taller de bicicletas y patinetas eléctricas en Chapinero. Recoge tu placa y te la instalamos mientras esperas.</p></div>
+      <div class="visit">
+        <figure class="visit-photo"><img src="img/local.jpg" alt="Fachada de la tienda Bici-LAB en la Carrera 7 # 57-87, Chapinero, Bogotá" loading="lazy"><figcaption>Cra. 7 # 57-87 · Chapinero</figcaption></figure>
+        <div class="visit-side">
+          <div class="map">
+            <iframe id="mapFrame" title="Mapa de Bici-LAB en Google Maps" loading="lazy" referrerpolicy="no-referrer-when-downgrade" hidden></iframe>
+            <a class="map-static" id="mapStatic" target="_blank" rel="noopener" aria-label="Abrir la ubicación de Bici-LAB en Google Maps">
+          <svg viewBox="0 0 400 260" role="img" aria-label="Mapa de ubicación de Bici-LAB en la Carrera 7 con Calle 57, Chapinero, Bogotá">
+            <rect width="400" height="260" fill="#eef0f2"/>
+            <g stroke="#ffffff" stroke-linecap="round">
+              <path d="M0 70H400M0 130H400M0 195H400" stroke-width="10"/>
+              <path d="M70 0V260M300 0V260" stroke-width="10"/>
+              <path d="M150 0L225 260" stroke-width="18"/>
+            </g>
+            <rect x="20" y="210" width="80" height="40" rx="6" fill="#dfe8d8"/>
+            <rect x="320" y="20" width="62" height="34" rx="6" fill="#dfe8d8"/>
+            <g font-family="-apple-system,Helvetica,Arial,sans-serif" font-size="11" fill="#86868b">
+              <text x="158" y="22" transform="rotate(74 158 22)">Carrera 7</text>
+              <text x="310" y="124">Calle 57</text>
+              <text x="310" y="64">Calle 58</text>
+              <text x="310" y="189">Calle 56</text>
+            </g>
+            <circle cx="183" cy="130" r="22" fill="#00a0df" opacity=".15"/>
+            <path d="M183 132c0 0-17-19-17-31a17 17 0 1 1 34 0c0 12-17 31-17 31z" fill="#00a0df"/>
+            <circle cx="183" cy="101" r="6" fill="#fff"/>
+            <rect x="208" y="87" width="96" height="28" rx="14" fill="#1d1d1f"/>
+            <text x="256" y="105" text-anchor="middle" font-family="-apple-system,Helvetica,Arial,sans-serif" font-size="12" font-weight="700" fill="#fff">Bici-LAB</text>
+          </svg>
+            </a>
+          </div>
+          <div class="visit-info">
+            <p class="addr">Cra. 7 # 57-87, Bogotá</p>
+            <div class="hours">
+              <div><span>Lunes a sábado</span><b class="num">10:00 a. m. – 8:00 p. m.</b></div>
+              <div><span>Domingos y festivos</span><b class="num">9:00 a. m. – 2:00 p. m.</b></div>
+            </div>
+            <div class="row-btns">
+              <a class="btn btn-primary" id="mapsBtn" target="_blank" rel="noopener">Cómo llegar</a>
+              <a class="btn btn-ghost" id="waBtn" target="_blank" rel="noopener">WhatsApp 300 371 2671</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </section>
 
@@ -717,67 +786,24 @@ body{font-size:16px}
     </div>
   </section>
 
-  <section class="sec" id="visitanos">
+  
+  <section class="sec" id="siguenos">
     <div class="wrap">
-      <div class="sec-title"><h2>Visítanos</h2><p>Somos una tienda y taller de bicicletas y patinetas eléctricas en Chapinero. Recoge tu placa y te la instalamos mientras esperas.</p></div>
-      <div class="visit">
-        <figure class="visit-photo"><img src="img/local.jpg" alt="Fachada de la tienda Bici-LAB en la Carrera 7 # 57-87, Chapinero, Bogotá" loading="lazy"><figcaption>Cra. 7 # 57-87 · Chapinero</figcaption></figure>
-        <div class="visit-side">
-          <div class="map">
-            <iframe id="mapFrame" title="Mapa de Bici-LAB en Google Maps" loading="lazy" referrerpolicy="no-referrer-when-downgrade" hidden></iframe>
-            <a class="map-static" id="mapStatic" target="_blank" rel="noopener" aria-label="Abrir la ubicación de Bici-LAB en Google Maps">
-          <svg viewBox="0 0 400 260" role="img" aria-label="Mapa de ubicación de Bici-LAB en la Carrera 7 con Calle 57, Chapinero, Bogotá">
-            <rect width="400" height="260" fill="#eef0f2"/>
-            <g stroke="#ffffff" stroke-linecap="round">
-              <path d="M0 70H400M0 130H400M0 195H400" stroke-width="10"/>
-              <path d="M70 0V260M300 0V260" stroke-width="10"/>
-              <path d="M150 0L225 260" stroke-width="18"/>
-            </g>
-            <rect x="20" y="210" width="80" height="40" rx="6" fill="#dfe8d8"/>
-            <rect x="320" y="20" width="62" height="34" rx="6" fill="#dfe8d8"/>
-            <g font-family="-apple-system,Helvetica,Arial,sans-serif" font-size="11" fill="#86868b">
-              <text x="158" y="22" transform="rotate(74 158 22)">Carrera 7</text>
-              <text x="310" y="124">Calle 57</text>
-              <text x="310" y="64">Calle 58</text>
-              <text x="310" y="189">Calle 56</text>
-            </g>
-            <circle cx="183" cy="130" r="22" fill="#00a0df" opacity=".15"/>
-            <path d="M183 132c0 0-17-19-17-31a17 17 0 1 1 34 0c0 12-17 31-17 31z" fill="#00a0df"/>
-            <circle cx="183" cy="101" r="6" fill="#fff"/>
-            <rect x="208" y="87" width="96" height="28" rx="14" fill="#1d1d1f"/>
-            <text x="256" y="105" text-anchor="middle" font-family="-apple-system,Helvetica,Arial,sans-serif" font-size="12" font-weight="700" fill="#fff">Bici-LAB</text>
-          </svg>
-            </a>
-          </div>
-          <div class="visit-info">
-            <p class="addr">Cra. 7 # 57-87, Bogotá</p>
-            <div class="hours">
-              <div><span>Lunes a sábado</span><b class="num">10:00 a. m. – 8:00 p. m.</b></div>
-              <div><span>Domingos y festivos</span><b class="num">9:00 a. m. – 2:00 p. m.</b></div>
-            </div>
-            <div class="row-btns">
-              <a class="btn btn-primary" id="mapsBtn" target="_blank" rel="noopener">Cómo llegar</a>
-              <a class="btn btn-ghost" id="waBtn" target="_blank" rel="noopener">WhatsApp 300 371 2671</a>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div class="social-head">
         <h3>Síguenos</h3>
         <div class="car-nav"><button type="button" class="car-btn" id="carPrev" aria-label="Anterior">←</button><button type="button" class="car-btn" id="carNext" aria-label="Siguiente">→</button></div>
       </div>
       <div class="carousel" id="carousel">
         <a class="soc" data-soc="instagram" target="_blank" rel="noopener">
-          <img src="img/local-crop.jpg" alt="Entrada de la tienda Bici-LAB" loading="lazy">
+          <img src="img/red-instagram.jpg" alt="Logo de Bici-Lab: laboratorio, taller y tienda de accesorios" loading="lazy">
           <div class="soc-body"><span class="soc-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2c3.2 0 3.6 0 4.8.1 1.2.1 1.8.2 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.4 1.1.4 2.2.1 1.3.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1.1.4-2.2.4-1.3.1-1.6.1-4.8.1s-3.6 0-4.8-.1c-1.2-.1-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1.1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.8c.1-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1.1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2zm0 4.6a5.2 5.2 0 1 0 0 10.4 5.2 5.2 0 0 0 0-10.4zm0 8.6a3.4 3.4 0 1 1 0-6.8 3.4 3.4 0 0 1 0 6.8zm5.4-9.9a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4z"/></svg></span><div><b>Instagram</b><span>@bici_lab_oficial</span></div><span class="soc-cta">Ver perfil →</span></div>
         </a>
         <a class="soc" data-soc="facebook" target="_blank" rel="noopener">
-          <img class="contain" src="img/placa-real-1.jpg" alt="Placa Ley 2486 para patineta eléctrica grabada por Bici-LAB" loading="lazy">
-          <div class="soc-body"><span class="soc-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.7l.4-3.2h-3.1V8.8c0-.9.3-1.5 1.6-1.5h1.7V4.4c-.3 0-1.3-.1-2.5-.1-2.4 0-4.1 1.5-4.1 4.2v2.3H7.5V14h2.7v8h3.3z"/></svg></span><div><b>Facebook</b><span>Bici-LAB</span></div><span class="soc-cta">Ver página →</span></div>
+          <img src="img/red-facebook.jpg" alt="Publicación de Bici-LAB en Facebook: 5 cosas que deberías revisar antes de salir con tu bici" loading="lazy">
+          <div class="soc-body"><span class="soc-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.7l.4-3.2h-3.1V8.8c0-.9.3-1.5 1.6-1.5h1.7V4.4c-.3 0-1.3-.1-2.5-.1-2.4 0-4.1 1.5-4.1 4.2v2.3H7.5V14h2.7v8h3.3z"/></svg></span><div><b>Facebook</b><span>/bicilab7</span></div><span class="soc-cta">Ver página →</span></div>
         </a>
         <a class="soc" data-soc="tiktok" target="_blank" rel="noopener">
-          <img class="contain" src="img/placa-real-2.jpg" alt="Placa Ley 2486 grabada por Bici-LAB" loading="lazy">
+          <img class="top" src="img/red-tiktok.jpg" alt="Video de Bici-LAB en TikTok: 3 looks para salir a rodar en la ciudad" loading="lazy">
           <div class="soc-body"><span class="soc-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.6 2h-3.3v13.2a2.9 2.9 0 1 1-2-2.8V9a6.2 6.2 0 1 0 5.3 6.2V8.4a7.6 7.6 0 0 0 4.4 1.4V6.5a4.3 4.3 0 0 1-4.4-4.5z"/></svg></span><div><b>TikTok</b><span>@bk.bicistore</span></div><span class="soc-cta">Ver videos →</span></div>
         </a>
       </div>

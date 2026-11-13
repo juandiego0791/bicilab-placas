@@ -890,6 +890,7 @@ const CONFIG = {
     tiktok: "https://www.tiktok.com/@bk.bicistore",
     mapsEmbed: "https://www.google.com/maps?q=Bici-Lab,+Cra.+7+%2357-87,+Bogot%C3%A1&output=embed"
   },
+  metaPixel: "",                                  // ID del píxel de Meta (solo números). Vacío = desactivado
   ia: false,                                      // true para mostrar el asistente con IA
   tiempos: { produccion: "1 a 2 días hábiles (máximo 5 días hábiles)" },
   api: { enabled: true, base: "/api" },           // solo se usa fuera de Claude (sitio propio)
@@ -1419,6 +1420,7 @@ $("#enviar").onclick = async () => {
       await fetch("/", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: body.toString() });
     } catch {}
   }
+  track("Lead", { value: total, currency: "COP", content_name: "Placa VELMPU", content_category: state.serv });
   $("#mNum").textContent = id;
   $("#mMsg").textContent = saved
     ? `Recibimos tu pedido y el comprobante. Para agilizar, envíanos también el resumen por WhatsApp. Te confirmamos cuando verifiquemos el pago de ${COP(total)}.`
@@ -1469,6 +1471,16 @@ $("#bulkForm").addEventListener("submit", e => {
   const a = document.createElement("a"); a.href = url; a.target = "_blank"; a.rel = "noopener"; document.body.append(a); a.click(); a.remove();
   $("#bulkNote").innerHTML = `Si no se abrió WhatsApp, <a href="${url}" target="_blank" rel="noopener" style="color:var(--primary)">toca aquí</a>.`;
 });
+
+/* ---------- Píxel de Meta (solo en el sitio propio) ---------- */
+const track = (ev, params) => { try { if (window.fbq) window.fbq("track", ev, params || {}); } catch {} };
+if (CONFIG.metaPixel && !window.claude) {
+  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version="2.0";n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,"script","https://connect.facebook.net/en_US/fbevents.js");
+  fbq("init", CONFIG.metaPixel); fbq("track", "PageView");
+  document.addEventListener("click", e => { const a = e.target.closest && e.target.closest('a[href*="wa.me"]'); if (a) track("Contact", { content_name: a.id || "whatsapp" }); }, true);
+  let started = false;
+  document.addEventListener("input", e => { if (!started && e.target.closest && e.target.closest("#pedido")) { started = true; track("InitiateCheckout", { value: CONFIG.precios.placa, currency: "COP" }); } }, true);
+}
 
 /* ---------- Asistente IA on/off ---------- */
 if (!CONFIG.ia) $$("[data-ia]").forEach(el => el.hidden = true);

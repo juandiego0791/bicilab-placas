@@ -72,7 +72,7 @@ por tu dominio, por ejemplo:
 - [ ] Entra a `tudominio.co/admin.html`, escribe tu `ADMIN_TOKEN` y verifica que aparezca el pedido y se abra el comprobante.
 - [ ] Prueba el asistente con IA con una marca y modelo reales, y con una foto de una etiqueta.
 - [ ] Escanea el QR de Bre-B con la app de tu banco.
-- [ ] Revisa que el botón de WhatsApp abra el chat con el 300 371 2671.
+- [ ] Revisa que el botón de WhatsApp abra el chat con el 301 513 1223.
 
 ## Cómo editar cosas comunes
 Todo está en el bloque `CONFIG` al inicio del script de `public/index.html`:

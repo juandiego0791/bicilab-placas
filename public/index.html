@@ -843,7 +843,7 @@ body{font-size:16px}
 </footer>
 
 <form name="pedido-nuevo" data-netlify="true" netlify-honeypot="bot-field" hidden>
-  <input name="bot-field"><input name="pedido"><input name="cliente"><input name="celular"><input name="servicio"><input name="total"><textarea name="resumen"></textarea>
+  <input name="bot-field"><input name="pedido"><input name="cliente"><input name="celular"><input name="servicio"><input name="total"><input name="origen"><textarea name="resumen"></textarea>
 </form>
 
 <a class="wa-float" id="waFloat" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp a Bici-LAB">
@@ -910,6 +910,17 @@ const QR_SRC = "img/qr-breb.png";
 /* ================================================================== */
 
 const $ = s => document.querySelector(s);
+/* Origen del cliente (para medir la publicidad): ?utm_source=instagram&utm_campaign=... */
+const ORIGEN = (() => {
+  try {
+    const q = new URLSearchParams(location.search);
+    const src = q.get("utm_source"), camp = q.get("utm_campaign");
+    if (src) { const o = src + (camp ? " / " + camp : ""); try { sessionStorage.setItem("bl_origen", o); } catch {} return o; }
+    try { const s = sessionStorage.getItem("bl_origen"); if (s) return s; } catch {}
+    if (document.referrer) { try { return new URL(document.referrer).hostname.replace(/^www\./, ""); } catch {} }
+  } catch {}
+  return "directo";
+})();
 const $$ = s => [...document.querySelectorAll(s)];
 const COP = n => new Intl.NumberFormat("es-CO",{style:"currency",currency:"COP",maximumFractionDigits:0}).format(n);
 const FIELDS = ["categoria","marca","modelo","serie","anio","vmax","potencia","peso"];
@@ -1360,6 +1371,7 @@ function resumen(id, total){
   if (state.serv!=="envio" && c.fecha) lines.push(`Fecha preferida: ${c.fecha}, ${c.franja}`);
   if (c.notas) lines.push(`Notas: ${c.notas}`);
   lines.push(``, `PAGO: ${COP(total)} por ${pago}${c.refPago?` · Ref. ${c.refPago}`:""}`);
+  lines.push(`Origen: ${ORIGEN}`);
   return lines.join("\n");
 }
 
@@ -1395,7 +1407,7 @@ $("#enviar").onclick = async () => {
       const fd = new FormData();
       fd.append("pedido", JSON.stringify({ id, creado: new Date().toISOString(), estado: "pago por verificar", servicio: state.serv, total,
         envio: state.serv === "envio" ? envio() : null, domicilio: state.serv === "domicilio" ? domicilio() : null, depto: $("#depto").value,
-        vehiculo: veh(), contacto: contacto(), aceptaTerminos: new Date().toISOString(), autorizaDatos: true, pago: state.pago, resumen: text }));
+        vehiculo: veh(), contacto: contacto(), aceptaTerminos: new Date().toISOString(), autorizaDatos: true, pago: state.pago, origen: ORIGEN, resumen: text }));
       if (state.file) fd.append("comprobante", state.file);
       const r = await fetch(CONFIG.api.base + "/pedido", { method: "POST", body: fd });
       saved = r.ok;
@@ -1403,7 +1415,7 @@ $("#enviar").onclick = async () => {
     // Aviso por correo (Netlify Forms)
     try {
       const c = contacto();
-      const body = new URLSearchParams({ "form-name": "pedido-nuevo", pedido: id, cliente: c.nombre, celular: c.celular, servicio: state.serv, total: COP(total), resumen: text });
+      const body = new URLSearchParams({ "form-name": "pedido-nuevo", pedido: id, cliente: c.nombre, celular: c.celular, servicio: state.serv, total: COP(total), origen: ORIGEN, resumen: text });
       await fetch("/", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: body.toString() });
     } catch {}
   }

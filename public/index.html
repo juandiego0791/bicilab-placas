@@ -210,6 +210,9 @@ details ul{margin:8px 0 0;padding-left:18px;color:var(--muted);font-size:.9rem;d
 .ship-box{background:var(--bg);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px}
 .ship-quote{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .ship-quote b{font-size:1.4rem;letter-spacing:-.02em}
+.ship-contra{font-size:.92rem;margin:0}
+.ship-pre{font-size:.8rem;margin:0}
+.ship-pre a{color:var(--ink)}
 .ship-pay{border:0;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .ship-pay legend{font-size:.84rem;font-weight:600;color:#424245;margin-bottom:8px;padding:0}
 .radio{flex-direction:row!important;align-items:flex-start;gap:10px;background:#fff;border-radius:12px;padding:12px;font-weight:400!important;color:var(--ink)!important;cursor:pointer;border:2px solid transparent}
@@ -598,7 +601,7 @@ body{font-size:16px}
             <span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6h13v10H1z"/><path d="M14 9h4l3 3v4h-7"/><circle cx="5.5" cy="18" r="2"/><circle cx="17.5" cy="18" r="2"/></svg></span>
             <h3>Envío nacional</h3>
             <span class="price num" data-price="envio"></span>
-            <p>A cualquier ciudad. Valor aproximado según el destino; pagas el envío al recibir o con la transferencia. Se envía solo la placa.</p>
+            <p>A cualquier ciudad. Se envía solo la placa y el envío se paga contraentrega.</p>
           </label>
         </div>
       </section>
@@ -616,12 +619,9 @@ body{font-size:16px}
           <label for="ciudad" data-for="envio">Ciudad o municipio<input id="ciudad" list="ciudadesList" placeholder="Ej.: Medellín" autocomplete="address-level2"><datalist id="ciudadesList"></datalist></label>
           <div class="full ship-box" data-for="envio" id="shipBox">
             <div class="ship-quote"><span>Envío aproximado</span><b class="num" id="shipPrice">—</b><span class="hint" id="shipZone">Elige departamento y ciudad</span></div>
-            <fieldset class="ship-pay">
-              <legend>¿Cómo pagas el envío?</legend>
-              <label class="radio"><input type="radio" name="shipPay" value="contraentrega" checked> <span><b>Contraentrega</b><br><span class="hint">Lo pagas a la transportadora cuando recibes la placa.</span></span></label>
-              <label class="radio"><input type="radio" name="shipPay" value="prepago"> <span><b>Lo pago ahora</b><br><span class="hint">Lo sumamos al total y lo incluyes en la transferencia.</span></span></label>
-            </fieldset>
-            <p class="hint" style="font-size:.78rem">Valor aproximado calculado con la tarifa pública de Coordinadora para envíos de hasta 2 kg desde Bogotá. El valor final lo fija la transportadora.</p>
+            <p class="ship-contra"><b>El envío se paga contraentrega</b>: se lo pagas a la transportadora cuando recibes la placa.</p>
+            <p class="hint ship-pre">¿Prefieres que nosotros paguemos el envío? Haz tu pedido y <a id="waShip" target="_blank" rel="noopener">escríbenos por WhatsApp</a>: te decimos el valor exacto y nos lo transfieres.</p>
+            <p class="hint" style="font-size:.75rem">Valor aproximado según la tarifa pública de Coordinadora desde Bogotá. El valor final lo fija la transportadora.</p>
           </div>
           <label for="localidad" class="full" data-for="domicilio">Localidad en Bogotá <span class="sub" id="locNote"></span>
             <select id="localidad"></select>
@@ -1066,7 +1066,7 @@ function envio(){
   const z = zonaEnvio();
   if (!z) return null;
   const precio = Math.round((ZONAS[z].precio + CONFIG.precios.placa * MANEJO) / 100) * 100;
-  return {zona:z, nombre:ZONAS[z].nombre, precio, pago: (document.querySelector('input[name="shipPay"]:checked')||{}).value || "contraentrega"};
+  return {zona:z, nombre:ZONAS[z].nombre, precio, pago: "contraentrega"};
 }
 (function(){
   $("#depto").innerHTML = `<option value="">Selecciona…</option>` + DEPTOS.map(d => `<option>${esc(d)}</option>`).join("");
@@ -1109,7 +1109,7 @@ function render(){
     <tr><td>${esc(servName)}${en ? `<br><span class="hint" style="font-size:.75rem">Zona ${esc(en.nombre)} · valor aproximado</span>` : ""}</td><td>${spTxt}</td></tr>
     <tr class="total"><td>${contra ? "Total a transferir" : "Total"}</td><td>${COP(total)}</td></tr>
     ${contra ? `<tr><td colspan="2" class="hint" style="font-size:.78rem;text-align:left;border:0">El envío (≈ ${COP(en.precio)}) lo pagas a la transportadora al recibir.</td></tr>` : ""}
-    ${en && !contra ? `<tr><td colspan="2" class="hint" style="font-size:.78rem;text-align:left;border:0">Incluye el envío aproximado: transfiérelo junto con la placa.</td></tr>` : ""}`;
+`;
   if ($("#shipPrice")) {
     $("#shipPrice").textContent = en ? "≈ " + COP(en.precio) : "—";
     $("#shipZone").textContent = en ? `Zona ${en.nombre}${en.zona==="L"?" · en Bogotá también puedes elegir domicilio o recogida en tienda":""}` : "Elige departamento y ciudad";
@@ -1478,6 +1478,7 @@ $("#heroPlate").innerHTML = plateSVG({});
 const WA = `https://wa.me/${CONFIG.tienda.whatsapp}?text=${encodeURIComponent("Hola Bici-LAB, quiero información sobre la placa VELMPU para mi vehículo.")}`;
 const setHref = (sel, url) => document.querySelectorAll(sel).forEach(e => e.href = url);
 setHref("#waFloat, #waBtn, #fWa", WA);
+setHref("#waShip", `https://wa.me/${CONFIG.tienda.whatsapp}?text=${encodeURIComponent("Hola Bici-LAB, hice un pedido con envío nacional y quiero pagar el envío por adelantado. ¿Cuánto vale exactamente?")}`);
 setHref("#mapsBtn, #fMaps, #mapStatic", CONFIG.tienda.maps);
 setHref("#fIg, [data-soc=instagram]", CONFIG.tienda.instagram);
 setHref("#fFb, [data-soc=facebook]", CONFIG.tienda.facebook);

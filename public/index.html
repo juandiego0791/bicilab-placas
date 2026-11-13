@@ -890,6 +890,7 @@ const CONFIG = {
     tiktok: "https://www.tiktok.com/@bk.bicistore",
     mapsEmbed: "https://www.google.com/maps?q=Bici-Lab,+Cra.+7+%2357-87,+Bogot%C3%A1&output=embed"
   },
+  googleAds: { id: "AW-18573553278", pedido: "AW-18573553278/oqzGCPrz8rcdEP7cx5hF" }, // Etiqueta de Google Ads. id vacío = desactivado
   metaPixel: "",                                  // ID del píxel de Meta (solo números). Vacío = desactivado
   ia: false,                                      // true para mostrar el asistente con IA
   tiempos: { produccion: "1 a 2 días hábiles (máximo 5 días hábiles)" },
@@ -1421,6 +1422,7 @@ $("#enviar").onclick = async () => {
     } catch {}
   }
   track("Lead", { value: total, currency: "COP", content_name: "Placa VELMPU", content_category: state.serv });
+  try { if (window.gtag && CONFIG.googleAds.pedido) window.gtag("event", "conversion", { send_to: CONFIG.googleAds.pedido, value: total, currency: "COP", transaction_id: id }); } catch {}
   $("#mNum").textContent = id;
   $("#mMsg").textContent = saved
     ? `Recibimos tu pedido y el comprobante. Para agilizar, envíanos también el resumen por WhatsApp. Te confirmamos cuando verifiquemos el pago de ${COP(total)}.`
@@ -1480,6 +1482,13 @@ if (CONFIG.metaPixel && !window.claude) {
   document.addEventListener("click", e => { const a = e.target.closest && e.target.closest('a[href*="wa.me"]'); if (a) track("Contact", { content_name: a.id || "whatsapp" }); }, true);
   let started = false;
   document.addEventListener("input", e => { if (!started && e.target.closest && e.target.closest("#pedido")) { started = true; track("InitiateCheckout", { value: CONFIG.precios.placa, currency: "COP" }); } }, true);
+}
+
+/* ---------- Etiqueta de Google Ads (solo en el sitio propio) ---------- */
+if (CONFIG.googleAds && CONFIG.googleAds.id && !window.claude) {
+  const gs = document.createElement("script"); gs.async = true; gs.src = "https://www.googletagmanager.com/gtag/js?id=" + CONFIG.googleAds.id; document.head.append(gs);
+  window.dataLayer = window.dataLayer || []; window.gtag = function(){ dataLayer.push(arguments); };
+  gtag("js", new Date()); gtag("config", CONFIG.googleAds.id);
 }
 
 /* ---------- Asistente IA on/off ---------- */

@@ -74,12 +74,18 @@ function render(){
       <div class="row" style="flex-direction:column;align-items:stretch">
         <select data-id="${esc(p.id)}" class="est">${ESTADOS.map(e=>`<option ${e===p.estado?"selected":""}>${e}</option>`).join("")}</select>
         ${p.comprobante ? `<button class="ghost comp" data-id="${esc(p.id)}">Ver comprobante</button>` : `<span class="muted">Sin comprobante (revisar WhatsApp)</span>`}
+        ${p.estado==="cancelada" ? `<button class="ghost del" data-id="${esc(p.id)}" style="color:#b42318;border-color:#f3c0bb">Borrar pedido</button>` : ""}
         <a class="muted" href="https://wa.me/57${esc(String(c.celular||"").replace(/\D/g,"").slice(-10))}" target="_blank" rel="noopener">Escribir al cliente</a>
       </div></div>`;
   }).join("");
   document.querySelectorAll(".est").forEach(s => s.onchange = async () => {
     const r = await fetch("/api/pedidos", { method:"PATCH", headers:{...auth(),"Content-Type":"application/json"}, body: JSON.stringify({ id: s.dataset.id, estado: s.value }) });
     if (r.ok) { const p = data.find(x => x.id === s.dataset.id); p.estado = s.value; render(); } else alertBox("No se pudo cambiar el estado.");
+  });
+  document.querySelectorAll(".del").forEach(b => b.onclick = async () => {
+    if (!confirm("¿Borrar definitivamente el pedido " + b.dataset.id + "? No se puede deshacer.")) return;
+    const r = await fetch("/api/pedidos?id=" + encodeURIComponent(b.dataset.id), { method:"DELETE", headers: auth() });
+    if (r.ok) { data = data.filter(x => x.id !== b.dataset.id); render(); } else alertBox("No se pudo borrar el pedido.");
   });
   document.querySelectorAll(".comp").forEach(b => b.onclick = async () => {
     const r = await fetch("/api/comprobante?id=" + encodeURIComponent(b.dataset.id), { headers: auth() });

@@ -16,6 +16,17 @@ export default async (req) => {
     return Response.json({ ok: true });
   }
 
+  if (req.method === "DELETE") {
+    // Solo se pueden borrar pedidos que ya estén en estado "cancelada"
+    const id = url.searchParams.get("id");
+    const p = id && await store.get(id, { type: "json" });
+    if (!p) return Response.json({ error: "No existe" }, { status: 404 });
+    if (p.estado !== "cancelada") return Response.json({ error: "Primero márcalo como cancelada" }, { status: 409 });
+    await store.delete(id);
+    await getStore("comprobantes").delete(id).catch(() => {});
+    return Response.json({ ok: true });
+  }
+
   const { blobs } = await store.list();
   const items = await Promise.all(blobs.map(b => store.get(b.key, { type: "json" })));
   const out = items.filter(Boolean).sort((a, b) => String(b.recibido).localeCompare(String(a.recibido)));
